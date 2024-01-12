@@ -7,18 +7,18 @@ import torch
 import torch as th
 import torch.nn as nn
 
-from ldm.modules.diffusionmodules.util import (
+from ..ldm.modules.diffusionmodules.util import (
     conv_nd,
     linear,
     zero_module,
     timestep_embedding,
 )
-from ldm.modules.attention import SpatialTransformer
-from ldm.modules.diffusionmodules.openaimodel import TimestepEmbedSequential, ResBlock, Downsample, AttentionBlock, UNetModel
-from ldm.models.diffusion.ddpm_ccsr_stage2 import LatentDiffusion
-from ldm.util import log_txt_as_img, exists, instantiate_from_config
-from ldm.modules.distributions.distributions import DiagonalGaussianDistribution
-from utils.common import frozen_module
+from ..ldm.modules.attention import SpatialTransformer
+from ..ldm.modules.diffusionmodules.openaimodel import TimestepEmbedSequential, ResBlock, Downsample, AttentionBlock, UNetModel
+from ..ldm.models.diffusion.ddpm_ccsr_stage2 import LatentDiffusion
+from ..ldm.util import log_txt_as_img, exists, instantiate_from_config
+from ..ldm.modules.distributions.distributions import DiagonalGaussianDistribution
+from ..utils.common import frozen_module
 from .spaced_sampler import SpacedSampler
 
 class ControlledUnetModel(UNetModel):

@@ -1,4 +1,4 @@
-target: model.ccsr_stage2.ControlLDM
+target: ComfyUI-CCSR.model.ccsr_stage2.ControlLDM
 params:
   linear_start: 0.00085
   linear_end: 0.0120
@@ -24,7 +24,7 @@ params:
   learning_rate: 5e-6
   
   control_stage_config:
-    target: model.ccsr_stage2.ControlNet
+    target: ComfyUI-CCSR.model.ccsr_stage2.ControlNet
     params:
       use_checkpoint: True
       image_size: 32 # unused
@@ -42,7 +42,7 @@ params:
       legacy: False
 
   unet_config:
-    target: model.ccsr_stage2.ControlledUnetModel
+    target: ComfyUI-CCSR.model.ccsr_stage2.ControlledUnetModel
     params:
       use_checkpoint: True
       image_size: 32 # unused
@@ -60,7 +60,7 @@ params:
       legacy: False
 
   first_stage_config:
-    target: ldm.models.autoencoder.AutoencoderKL
+    target: ComfyUI-CCSR.ldm.models.autoencoder.AutoencoderKL
     params:
       embed_dim: 4
       monitor: val/rec_loss
@@ -84,13 +84,13 @@ params:
         target: torch.nn.Identity
 
   cond_stage_config:
-    target: ldm.modules.encoders.modules.FrozenOpenCLIPEmbedder
+    target: ComfyUI-CCSR.ldm.modules.encoders.modules.FrozenOpenCLIPEmbedder
     params:
       freeze: True
       layer: "penultimate"
   
   lossconfig:
-    target: ldm.modules.losses.LPIPSWithDiscriminator
+    target: ComfyUI-CCSR.ldm.modules.losses.LPIPSWithDiscriminator
     params:
       disc_start: 1.0
       kl_weight: 0
