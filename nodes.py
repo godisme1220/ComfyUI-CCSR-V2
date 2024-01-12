@@ -99,9 +99,24 @@ class CCSR_Upscale:
                 color_fix_type=color_fix_type
             )
 
-        x_samples = samples.clamp(0, 1)
-        x_samples = (einops.rearrange(x_samples, "b c h w -> b h w c")).cpu()
-        return (x_samples,)
+        # Original dimensions
+        original_height, original_width = H, W
+
+        # Compute the aspect ratio
+        aspect_ratio = original_width / original_height
+
+        # Your new height after processing
+        processed_height = samples.size(2)
+
+        # Calculate the target width using the aspect ratio
+        target_width = int(processed_height * aspect_ratio)
+
+        # Resize while keeping aspect ratio
+        resized_back_image = F.interpolate(samples, size=(processed_height, target_width), mode='bicubic', align_corners=False)
+
+        # If necessary, rearrange from [B, C, H, W] back to [B, H, W, C] and move to CPU
+        resized_back_image = resized_back_image.permute(0, 2, 3, 1).cpu()
+        return(resized_back_image,)
 
 NODE_CLASS_MAPPINGS = {
     "CCSR_Upscale": CCSR_Upscale,

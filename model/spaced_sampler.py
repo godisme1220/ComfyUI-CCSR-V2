@@ -12,7 +12,6 @@ from ..model.cond_fn import Guidance
 from ..utils.image import (
     wavelet_reconstruction, adaptive_instance_normalization
 )
-import comfy.utils
 
 # https://github.com/openai/guided-diffusion/blob/main/guided_diffusion/respace.py
 def space_timesteps(num_timesteps, section_counts):
@@ -470,8 +469,6 @@ class SpacedSampler:
         time_range = np.flip(self.timesteps) # [1000, 950, 900, ...]
         total_steps = len(self.timesteps)
         iterator = tqdm(time_range, desc="Spaced Sampler", total=total_steps)
-        
-        pbar = comfy.utils.ProgressBar(total_steps)
 
         # sampling loop
         for i, step in enumerate(iterator):
@@ -523,7 +520,6 @@ class SpacedSampler:
             
             noise_buffer.zero_()
             count.zero_()
-            pbar.update(1)
         
         # decode samples of each diffusion process
         img_buffer = torch.zeros_like(cond_img)
