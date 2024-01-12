@@ -33,7 +33,8 @@ class CCSR_Upscale:
                 'wavelet',
             ], {
                "default": 'adain'
-            }),  
+            }),
+            "use_fp16": ("BOOLEAN", {"default": True}), 
             },
             
             }
@@ -45,7 +46,7 @@ class CCSR_Upscale:
     CATEGORY = "CCSR"
 
     @torch.no_grad()
-    def process(self, image, steps, t_max, t_min, tiled,tile_size, tile_stride, color_fix_type):
+    def process(self, image, steps, t_max, t_min, tiled,tile_size, tile_stride, color_fix_type, use_fp16):
         checkpoint_path = os.path.join(script_directory, "../../models/checkpoints/real-world_ccsr.ckpt")
         config_path = os.path.join(script_directory, "configs/model/ccsr_stage2.yaml")
 
@@ -58,7 +59,8 @@ class CCSR_Upscale:
 
         model.freeze()
         model.to("cuda")
-
+        if (use_fp16):
+            model.half()
         sampler = SpacedSampler(model, var_type="fixed_small")
 
         # Assuming 'image' is a PyTorch tensor with shape [B, H, W, C] and you want to resize it.
@@ -82,22 +84,22 @@ class CCSR_Upscale:
         height, width = resized_image.size(-2), resized_image.size(-1)
         shape = (1, 4, height // 8, width // 8)
         x_T = torch.randn(shape, device=model.device, dtype=torch.float32)
-
-        if not tiled:
-            samples = sampler.sample_ccsr(
-                steps=steps, t_max=t_max, t_min=t_min, shape=shape, cond_img=resized_image,
-                positive_prompt="", negative_prompt="", x_T=x_T,
-                cfg_scale=1.0, cond_fn=cond_fn,
-                color_fix_type=color_fix_type
-            )
-        else:
-            samples = sampler.sample_with_mixdiff_ccsr(
-                tile_size=tile_size, tile_stride=tile_stride,
-                steps=steps, t_max=t_max, t_min=t_min, shape=shape, cond_img=resized_image,
-                positive_prompt="", negative_prompt="", x_T=x_T,
-                cfg_scale=1.0, cond_fn=cond_fn,
-                color_fix_type=color_fix_type
-            )
+        with torch.autocast("cuda", dtype=model.dtype):
+            if not tiled:
+                samples = sampler.sample_ccsr(
+                    steps=steps, t_max=t_max, t_min=t_min, shape=shape, cond_img=resized_image,
+                    positive_prompt="", negative_prompt="", x_T=x_T,
+                    cfg_scale=1.0, cond_fn=cond_fn,
+                    color_fix_type=color_fix_type
+                )
+            else:
+                samples = sampler.sample_with_mixdiff_ccsr(
+                    tile_size=tile_size, tile_stride=tile_stride,
+                    steps=steps, t_max=t_max, t_min=t_min, shape=shape, cond_img=resized_image,
+                    positive_prompt="", negative_prompt="", x_T=x_T,
+                    cfg_scale=1.0, cond_fn=cond_fn,
+                    color_fix_type=color_fix_type
+                )
 
         # Original dimensions
         original_height, original_width = H, W
