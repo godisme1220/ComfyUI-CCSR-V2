@@ -13,6 +13,8 @@ from .model.ccsr_stage1 import ControlLDM
 
 from .utils.common import instantiate_from_config, load_state_dict
 
+import comfy.model_management
+
 script_directory = os.path.dirname(os.path.abspath(__file__))
 
 class CCSR_Upscale:
@@ -52,13 +54,13 @@ class CCSR_Upscale:
 
         config = OmegaConf.load(config_path)
         model = instantiate_from_config(config)
-
+        device = comfy.model_management.get_torch_device()
 
         load_state_dict(model, torch.load(checkpoint_path, map_location="cpu"), strict=True)
         # reload preprocess model if specified
 
         model.freeze()
-        model.to("cuda")
+        model.to(device)
         if (use_fp16):
             model.half()
         sampler = SpacedSampler(model, var_type="fixed_small")
@@ -75,16 +77,16 @@ class CCSR_Upscale:
 
         # Resize the image tensor.
         resized_image = F.interpolate(image, size=(new_height, new_width), mode='bicubic', align_corners=False)
-
+        
         # Move the tensor to the GPU.
-        resized_image = resized_image.to("cuda")
+        resized_image = resized_image.to(device)
         strength = 1.0
         model.control_scales = [strength] * 13
         cond_fn = None
         height, width = resized_image.size(-2), resized_image.size(-1)
         shape = (1, 4, height // 8, width // 8)
         x_T = torch.randn(shape, device=model.device, dtype=torch.float32)
-        with torch.autocast("cuda", dtype=model.dtype):
+        with torch.autocast(comfy.model_management.get_autocast_device(device), dtype=model.dtype):
             if not tiled:
                 samples = sampler.sample_ccsr(
                     steps=steps, t_max=t_max, t_min=t_min, shape=shape, cond_img=resized_image,
