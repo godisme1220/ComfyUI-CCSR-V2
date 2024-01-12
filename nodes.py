@@ -1,33 +1,26 @@
 import os
-import sys
 import torch
-import numpy as np
 
-import numpy as np
 import torch
 import einops
 from torch.nn import functional as F
-import pytorch_lightning as pl
-from PIL import Image
+
 from omegaconf import OmegaConf
 
 from .model.q_sampler import SpacedSampler
 from .model.ccsr_stage1 import ControlLDM
-from .model.cond_fn import MSEGuidance
+#from .model.cond_fn import MSEGuidance
 
 from .utils.common import instantiate_from_config, load_state_dict
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
-project_directory = os.path.join(script_directory, '..')  # Adjust the path as necessary
-sys.path.insert(0, project_directory)
 
 class CCSR_Upscale:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {  
             "image": ("IMAGE", ),
-            #"sr_scale": ("INT", {"default": 4, "min": 1, "max": 12, "step": 1}),
-            "steps": ("INT", {"default": 10, "min": 1, "max": 4096, "step": 1}),
+            "steps": ("INT", {"default": 45, "min": 1, "max": 4096, "step": 1}),
             "t_max": ("FLOAT", {"default": 0.6667,"min": 0, "max": 1, "step": 0.01}),
             "t_min": ("FLOAT", {"default": 0.3333,"min": 0, "max": 1, "step": 0.01}),
             "tile_size": ("INT", {"default": 512, "min": 1, "max": 4096, "step": 1}),
@@ -40,8 +33,7 @@ class CCSR_Upscale:
                 'wavelet',
             ], {
                "default": 'adain'
-            }),
-            
+            }),  
             },
             
             }
@@ -53,29 +45,7 @@ class CCSR_Upscale:
     CATEGORY = "CCSR"
 
     @torch.no_grad()
-
-
-
     def process(self, image, steps, t_max, t_min, tiled,tile_size, tile_stride, color_fix_type):
-        """
-        Apply CCSR model on a list of low-quality images.
-
-        Args:
-            model (ControlLDM): Model.
-            control_imgs (List[np.ndarray]): A list of low-quality images (HWC, RGB, range in [0, 255]).
-            steps (int): Sampling steps.
-            t_max (float):
-            t_min (float):
-            strength (float): Control strength. Set to 1.0 during training.
-            color_fix_type (str): Type of color correction for samples.
-            cond_fn (Guidance | None): Guidance function that returns gradient to guide the predicted x_0.
-            tiled (bool): If specified, a patch-based sampling strategy will be used for sampling.
-            tile_size (int): Size of patch.
-            tile_stride (int): Stride of sliding patch.
-
-        Returns:
-            preds (List[np.ndarray]): Restoration results (HWC, RGB, range in [0, 255]).
-        """
         checkpoint_path = os.path.join(script_directory, "../../models/checkpoints/real-world_ccsr.ckpt")
         config_path = os.path.join(script_directory, "configs/model/ccsr_stage2.yaml")
 
@@ -106,25 +76,14 @@ class CCSR_Upscale:
 
         # Move the tensor to the GPU.
         resized_image = resized_image.to("cuda")
-
-
         strength = 1.0
         model.control_scales = [strength] * 13
-
         cond_fn = None
-
         height, width = resized_image.size(-2), resized_image.size(-1)
         shape = (1, 4, height // 8, width // 8)
         x_T = torch.randn(shape, device=model.device, dtype=torch.float32)
-        print(resized_image.shape)
-        print(x_T.shape)
+
         if not tiled:
-            # samples = sampler.sample_ccsr_stage1(
-            #     steps=steps, t_max=t_max, shape=shape, cond_img=control,
-            #     positive_prompt="", negative_prompt="", x_T=x_T,
-            #     cfg_scale=1.0, cond_fn=cond_fn,
-            #     color_fix_type=color_fix_type
-            # )
             samples = sampler.sample_ccsr(
                 steps=steps, t_max=t_max, t_min=t_min, shape=shape, cond_img=resized_image,
                 positive_prompt="", negative_prompt="", x_T=x_T,
@@ -141,11 +100,8 @@ class CCSR_Upscale:
             )
 
         x_samples = samples.clamp(0, 1)
-        #x_samples = (einops.rearrange(x_samples, "b c h w -> b h w c") * 255).cpu().numpy().clip(0, 255).astype(np.uint8)
         x_samples = (einops.rearrange(x_samples, "b c h w -> b h w c")).cpu()
-        print(x_samples.shape)
         return (x_samples,)
-
 
 NODE_CLASS_MAPPINGS = {
     "CCSR_Upscale": CCSR_Upscale,
