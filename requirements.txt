@@ -1,3 +1,5 @@
 taming-transformers
 omegaconf
 einops
+pytorch-lightning
+lightning-fabric
