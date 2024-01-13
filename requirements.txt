@@ -3,3 +3,4 @@ omegaconf
 einops
 pytorch-lightning
 lightning-fabric
+open-clip-torch

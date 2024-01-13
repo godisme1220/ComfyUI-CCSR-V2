@@ -9,7 +9,7 @@ from PIL import Image
 
 from ..ldm.modules.diffusionmodules.util import make_beta_schedule
 from ..model.cond_fn import Guidance
-from ..utils.image import (
+from ..utils.align_color import (
     wavelet_reconstruction, adaptive_instance_normalization
 )
 
