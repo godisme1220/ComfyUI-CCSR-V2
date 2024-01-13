@@ -1,7 +1,7 @@
 import os
 import torch
 from torch.nn import functional as F
-
+from contextlib import nullcontext
 from omegaconf import OmegaConf
 
 from .model.q_sampler import SpacedSampler
@@ -82,7 +82,7 @@ class CCSR_Upscale:
         height, width = resized_image.size(-2), resized_image.size(-1)
         shape = (1, 4, height // 8, width // 8)
         x_T = torch.randn(shape, device=model.device, dtype=torch.float32)
-        with torch.autocast(comfy.model_management.get_autocast_device(device), dtype=model.dtype):
+        with torch.autocast(comfy.model_management.get_autocast_device(device), dtype=model.dtype) if use_fp16 else nullcontext():
             if not tiled:
                 samples = sampler.sample_ccsr(
                     steps=steps, t_max=t_max, t_min=t_min, shape=shape, cond_img=resized_image,
