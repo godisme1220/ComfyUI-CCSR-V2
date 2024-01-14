@@ -12,6 +12,7 @@ from .utils.common import instantiate_from_config, load_state_dict
 import comfy.model_management
 import folder_paths
 from nodes import ImageScaleBy
+from nodes import ImageScale
 
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -25,7 +26,7 @@ class CCSR_Upscale:
             "image": ("IMAGE", ),
             "resize_method": (s.upscale_methods, {"default": "lanczos"}),
             "scale_by": ("FLOAT", {"default": 1.0, "min": 0.01, "max": 20.0, "step": 0.01}),
-            "steps": ("INT", {"default": 45, "min": 1, "max": 4096, "step": 1}),
+            "steps": ("INT", {"default": 45, "min": 2, "max": 4096, "step": 1}),
             "t_max": ("FLOAT", {"default": 0.6667,"min": 0, "max": 1, "step": 0.01}),
             "t_min": ("FLOAT", {"default": 0.3333,"min": 0, "max": 1, "step": 0.01}),
             "tile_size": ("INT", {"default": 512, "min": 1, "max": 4096, "step": 1}),
@@ -109,23 +110,12 @@ class CCSR_Upscale:
                     color_fix_type=color_fix_type
                 )
 
-        # Original dimensions
-        original_height, original_width = H, W
-
-        # Compute the aspect ratio
-        aspect_ratio = original_width / original_height
-
-        # Your new height after processing
+        original_height, original_width = H, W  
         processed_height = samples.size(2)
+        target_width = int(processed_height * (original_width / original_height))
 
-        # Calculate the target width using the aspect ratio
-        target_width = int(processed_height * aspect_ratio)
+        resized_back_image, = ImageScale.upscale(self, samples.permute(0, 2, 3, 1).cpu(), "lanczos", target_width, processed_height, crop="disabled")
 
-        # Resize while keeping aspect ratio
-        resized_back_image = F.interpolate(samples, size=(processed_height, target_width), mode='bicubic', align_corners=False)
-
-        # If necessary, rearrange from [B, C, H, W] back to [B, H, W, C] and move to CPU
-        resized_back_image = resized_back_image.permute(0, 2, 3, 1).cpu()
         if not keep_model_loaded:
             self.model = None            
             comfy.model_management.soft_empty_cache()
