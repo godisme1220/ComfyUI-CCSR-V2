@@ -91,7 +91,8 @@ class CCSR_Upscale:
         height, width = resized_image.size(-2), resized_image.size(-1)
         shape = (1, 4, height // 8, width // 8)
         x_T = torch.randn(shape, device=self.model.device, dtype=dtype)
-        with torch.autocast(comfy.model_management.get_autocast_device(device), dtype=dtype) if dtype == torch.float16 else nullcontext():
+        autocast_condition = dtype == torch.float16 or not comfy.model_management.is_device_mps(device)
+        with torch.autocast(comfy.model_management.get_autocast_device(device), dtype=dtype) if autocast_condition else nullcontext():
             if not tiled:
                 samples = sampler.sample_ccsr(
                     steps=steps, t_max=t_max, t_min=t_min, shape=shape, cond_img=resized_image,
