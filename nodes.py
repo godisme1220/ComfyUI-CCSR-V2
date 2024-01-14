@@ -55,7 +55,7 @@ class CCSR_Upscale:
         comfy.model_management.unload_all_models()
         device = comfy.model_management.get_torch_device()
         config_path = os.path.join(script_directory, "configs/model/ccsr_stage2.yaml")
-        dtype = torch.float16 if comfy.model_management.should_use_fp16() else torch.float32
+        dtype = torch.float16 if comfy.model_management.should_use_fp16() and not comfy.model_management.is_device_mps(device) else torch.float32
         
         if not hasattr(self, "model") or self.model is None:
             config = OmegaConf.load(config_path)
