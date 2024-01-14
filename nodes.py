@@ -10,13 +10,16 @@ from .model.ccsr_stage1 import ControlLDM
 from .utils.common import instantiate_from_config, load_state_dict
 
 import comfy.model_management
+import folder_paths
+
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
 
 class CCSR_Upscale:
     @classmethod
     def INPUT_TYPES(s):
-        return {"required": {  
+        return {"required": {
+            "ccsr_model": ("CCSRMODEL", ),
             "image": ("IMAGE", ),
             "steps": ("INT", {"default": 45, "min": 1, "max": 4096, "step": 1}),
             "t_max": ("FLOAT", {"default": 0.6667,"min": 0, "max": 1, "step": 0.01}),
@@ -32,7 +35,7 @@ class CCSR_Upscale:
             ], {
                "default": 'adain'
             }),
-            "use_fp16": ("BOOLEAN", {"default": True}), 
+            "keep_model_loaded": ("BOOLEAN", {"default": False}),
             },
             
             }
@@ -44,22 +47,21 @@ class CCSR_Upscale:
     CATEGORY = "CCSR"
 
     @torch.no_grad()
-    def process(self, image, steps, t_max, t_min, tiled,tile_size, tile_stride, color_fix_type, use_fp16):
-        checkpoint_path = os.path.join(script_directory, "../../models/checkpoints/real-world_ccsr.ckpt")
-        config_path = os.path.join(script_directory, "configs/model/ccsr_stage2.yaml")
-
-        config = OmegaConf.load(config_path)
-        model = instantiate_from_config(config)
+    def process(self, ccsr_model, image, steps, t_max, t_min, tiled,tile_size, tile_stride, color_fix_type, keep_model_loaded):
         device = comfy.model_management.get_torch_device()
+        config_path = os.path.join(script_directory, "configs/model/ccsr_stage2.yaml")
+        dtype = torch.float16 if comfy.model_management.should_use_fp16() else torch.float32
+        
+        if not hasattr(self, "model") or self.model is None:
+            config = OmegaConf.load(config_path)
+            self.model = instantiate_from_config(config)
+            
+            load_state_dict(self.model, torch.load(ccsr_model, map_location="cpu"), strict=True)
+            # reload preprocess model if specified
 
-        load_state_dict(model, torch.load(checkpoint_path, map_location="cpu"), strict=True)
-        # reload preprocess model if specified
-
-        model.freeze()
-        model.to(device)
-        if (use_fp16):
-            model.half()
-        sampler = SpacedSampler(model, var_type="fixed_small")
+            self.model.freeze()
+            self.model.to(device, dtype=dtype)
+        sampler = SpacedSampler(self.model, var_type="fixed_small")
 
         # Assuming 'image' is a PyTorch tensor with shape [B, H, W, C] and you want to resize it.
         B, H, W, C = image.shape
@@ -77,12 +79,12 @@ class CCSR_Upscale:
         # Move the tensor to the GPU.
         resized_image = resized_image.to(device)
         strength = 1.0
-        model.control_scales = [strength] * 13
+        self.model.control_scales = [strength] * 13
         cond_fn = None
         height, width = resized_image.size(-2), resized_image.size(-1)
         shape = (1, 4, height // 8, width // 8)
-        x_T = torch.randn(shape, device=model.device, dtype=torch.float32)
-        with torch.autocast(comfy.model_management.get_autocast_device(device), dtype=model.dtype) if use_fp16 else nullcontext():
+        x_T = torch.randn(shape, device=self.model.device, dtype=dtype)
+        with torch.autocast(comfy.model_management.get_autocast_device(device), dtype=dtype) if dtype == torch.float16 else nullcontext():
             if not tiled:
                 samples = sampler.sample_ccsr(
                     steps=steps, t_max=t_max, t_min=t_min, shape=shape, cond_img=resized_image,
@@ -116,11 +118,33 @@ class CCSR_Upscale:
 
         # If necessary, rearrange from [B, C, H, W] back to [B, H, W, C] and move to CPU
         resized_back_image = resized_back_image.permute(0, 2, 3, 1).cpu()
+        if not keep_model_loaded:
+            self.model = None            
+            comfy.model_management.soft_empty_cache()
         return(resized_back_image,)
 
+class CCSR_Model_Select:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": { 
+            "ckpt_name": (folder_paths.get_filename_list("checkpoints"),),                                             
+                             }}
+    RETURN_TYPES = ("CCSRMODEL",)
+    RETURN_NAMES = ("ccsr_model",)
+    FUNCTION = "load_ccsr_checkpoint"
+
+    CATEGORY = "CCSR"
+
+    def load_ccsr_checkpoint(self, ckpt_name):
+        ckpt_path = folder_paths.get_full_path("checkpoints", ckpt_name)
+        
+        return (ckpt_path,)
+    
 NODE_CLASS_MAPPINGS = {
     "CCSR_Upscale": CCSR_Upscale,
+    "CCSR_Model_Select": CCSR_Model_Select
 }
 NODE_DISPLAY_NAME_MAPPINGS = {
     "CCSR_Upscale": "CCSR_Upscale",
+    "CCSR_Model_Select": "CCSR_Model_Select"
 }
