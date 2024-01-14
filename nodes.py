@@ -11,16 +11,20 @@ from .utils.common import instantiate_from_config, load_state_dict
 
 import comfy.model_management
 import folder_paths
+from nodes import ImageScaleBy
 
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
 
 class CCSR_Upscale:
+    upscale_methods = ["nearest-exact", "bilinear", "area", "bicubic", "lanczos"]
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
             "ccsr_model": ("CCSRMODEL", ),
             "image": ("IMAGE", ),
+            "resize_method": (s.upscale_methods, {"default": "lanczos"}),
+            "scale_by": ("FLOAT", {"default": 1.0, "min": 0.01, "max": 20.0, "step": 0.01}),
             "steps": ("INT", {"default": 45, "min": 1, "max": 4096, "step": 1}),
             "t_max": ("FLOAT", {"default": 0.6667,"min": 0, "max": 1, "step": 0.01}),
             "t_min": ("FLOAT", {"default": 0.3333,"min": 0, "max": 1, "step": 0.01}),
@@ -47,7 +51,8 @@ class CCSR_Upscale:
     CATEGORY = "CCSR"
 
     @torch.no_grad()
-    def process(self, ccsr_model, image, steps, t_max, t_min, tiled,tile_size, tile_stride, color_fix_type, keep_model_loaded):
+    def process(self, ccsr_model, image, resize_method, scale_by, steps, t_max, t_min, tiled,tile_size, tile_stride, color_fix_type, keep_model_loaded):
+        comfy.model_management.unload_all_models()
         device = comfy.model_management.get_torch_device()
         config_path = os.path.join(script_directory, "configs/model/ccsr_stage2.yaml")
         dtype = torch.float16 if comfy.model_management.should_use_fp16() else torch.float32
@@ -62,6 +67,8 @@ class CCSR_Upscale:
             self.model.freeze()
             self.model.to(device, dtype=dtype)
         sampler = SpacedSampler(self.model, var_type="fixed_small")
+
+        image, = ImageScaleBy.upscale(self, image, resize_method, scale_by)
 
         # Assuming 'image' is a PyTorch tensor with shape [B, H, W, C] and you want to resize it.
         B, H, W, C = image.shape
