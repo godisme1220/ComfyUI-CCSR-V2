@@ -10,3 +10,6 @@ NOT a proper ComfyUI implementation, so not very efficient and there might be me
 
 The model (https://drive.google.com/drive/folders/1jM1mxDryPk9CTuFTvYcraP2XIVzbPiw_?usp=drive_link) goes to ComfyUI/models/checkpoints
 
+I suggest installing with the comfyui-manager:
+![image](https://github.com/kijai/ComfyUI-CCSR/assets/40791699/552640e1-77f8-4651-a560-a2b324d7735e)
+
