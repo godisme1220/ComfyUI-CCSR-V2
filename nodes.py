@@ -96,7 +96,7 @@ class CCSR_Upscale:
         resized_image = F.interpolate(image, size=(new_height, new_width), mode='bicubic', align_corners=False)
         
         # Move the tensor to the GPU.
-        resized_image = resized_image.to(device)
+        #resized_image = resized_image.to(device)
         strength = 1.0
         self.model.control_scales = [strength] * 13
         
@@ -108,13 +108,12 @@ class CCSR_Upscale:
 
         with torch.autocast(comfy.model_management.get_autocast_device(device), dtype=dtype) if autocast_condition else nullcontext():
             for i in range(batch_size):
-                
-
+                img = resized_image[i].unsqueeze(0).to(device)
                 if sampling_method == 'ccsr_tiled_mixdiff':
                     print("Using tiled mixdiff")
                     samples = sampler.sample_with_mixdiff_ccsr(
                         empty_text_embed, tile_size=tile_size, tile_stride=tile_stride,
-                        steps=steps, t_max=t_max, t_min=t_min, shape=shape, cond_img=resized_image[i].unsqueeze(0),
+                        steps=steps, t_max=t_max, t_min=t_min, shape=shape, cond_img=img,
                         positive_prompt="", negative_prompt="", x_T=x_T,
                         cfg_scale=1.0, 
                         color_fix_type=color_fix_type
@@ -124,7 +123,7 @@ class CCSR_Upscale:
                     print("Using gaussian weights")
                     samples = sampler.sample_with_tile_ccsr(
                         empty_text_embed, tile_size=tile_size, tile_stride=tile_stride,
-                        steps=steps, t_max=t_max, t_min=t_min, shape=shape, cond_img=resized_image[i].unsqueeze(0),
+                        steps=steps, t_max=t_max, t_min=t_min, shape=shape, cond_img=img,
                         positive_prompt="", negative_prompt="", x_T=x_T,
                         cfg_scale=1.0, 
                         color_fix_type=color_fix_type
@@ -132,12 +131,12 @@ class CCSR_Upscale:
                 else:
                     print("no tiling")
                     samples = sampler.sample_ccsr(
-                        empty_text_embed, steps=steps, t_max=t_max, t_min=t_min, shape=shape, cond_img=resized_image[i].unsqueeze(0),
+                        empty_text_embed, steps=steps, t_max=t_max, t_min=t_min, shape=shape, cond_img=img,
                         positive_prompt="", negative_prompt="", x_T=x_T,
                         cfg_scale=1.0,
                         color_fix_type=color_fix_type
                     )
-                out.append(samples.squeeze(0))
+                out.append(samples.squeeze(0).cpu())
        
         original_height, original_width = H, W  
         processed_height = samples.size(2)
