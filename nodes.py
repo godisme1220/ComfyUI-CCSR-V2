@@ -50,9 +50,9 @@ class CCSR_Upscale:
                "default": 'adain'
             }),
             "keep_model_loaded": ("BOOLEAN", {"default": False}),
-            
-            },
             "seed": ("INT", {"default": 123,"min": 0, "max": 0xffffffffffffffff, "step": 1}),
+            },
+            
             
             }
     
