@@ -58,6 +58,7 @@ from tqdm import tqdm
 import torch
 import torch.version
 import torch.nn.functional as F
+import comfy.model_management
 
 cpu = torch.device("cpu")
 device = device_interrogate = device_gfpgan = device_esrgan = device_codeformer = torch.device("cuda")
@@ -67,33 +68,7 @@ dtype_unet = torch.float16
 unet_needs_upcast = False
 
 def torch_gc():
-
-    if torch.cuda.is_available():
-        with torch.cuda.device("cuda"):
-            torch.cuda.empty_cache()
-            torch.cuda.ipc_collect()
-
-    if has_mps():
-        mac_specific.torch_mps_gc()
-
-def has_mps() -> bool:
-    if sys.platform != "darwin":
-        return False
-    else:
-        return mac_specific.has_mps
-
-def get_optimal_device_name():
-    if torch.cuda.is_available():
-        return "cuda"
-
-    if has_mps():
-        return "mps"
-
-    return "cpu"
-
-
-def get_optimal_device():
-    return torch.device(get_optimal_device_name())
+    comfy.model_management.soft_empty_cache()
 
 class NansException(Exception):
     pass
@@ -439,7 +414,7 @@ class VAEHook:
         original_device = next(self.net.parameters()).device
         try:
             if self.to_gpu:
-                self.net = self.net.to(get_optimal_device())
+                self.net = self.net.to(comfy.model_management.get_torch_device())
         
             B, C, H, W = x.shape
             if max(H, W) <= self.pad * 2 + self.tile_size:
