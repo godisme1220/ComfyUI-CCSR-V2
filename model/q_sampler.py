@@ -522,7 +522,7 @@ class SpacedSampler:
 
             weights = np.outer(y_probs, x_probs)
             
-            return torch.tile(torch.tensor(weights, device=next(self.model.parameters()).device), (nbatches, 4, 1, 1))
+            return torch.tile(torch.tensor(weights, dtype=torch.float32, device=next(self.model.parameters()).device), (nbatches, 4, 1, 1))
 
         # make sampling parameters (e.g. sigmas)
         self.make_schedule(num_steps=steps)
