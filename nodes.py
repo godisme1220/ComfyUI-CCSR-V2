@@ -115,6 +115,7 @@ class CCSR_Upscale:
             for i in range(batch_size):
                 img = resized_image[i].unsqueeze(0).to(device)
                 if sampling_method == 'ccsr_tiled_mixdiff':
+                    self.model.reset_encoder_decoder()
                     print("Using tiled mixdiff")
                     samples = sampler.sample_with_mixdiff_ccsr(
                         empty_text_embed, tile_size=tile_size, tile_stride=tile_stride,
@@ -134,6 +135,7 @@ class CCSR_Upscale:
                         color_fix_type=color_fix_type
                     )
                 else:
+                    self.model.reset_encoder_decoder()
                     print("no tiling")
                     samples = sampler.sample_ccsr(
                         empty_text_embed, steps=steps, t_max=t_max, t_min=t_min, shape=shape, cond_img=img,

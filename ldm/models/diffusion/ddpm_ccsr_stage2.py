@@ -737,7 +737,13 @@ class LatentDiffusion(DDPM):
         self.first_stage_model.decoder.forward = VAEHook(
             decoder, decoder_tile_size, is_decoder=True, fast_decoder=fast_decoder, fast_encoder=fast_encoder,
             color_fix=color_fix, to_gpu=vae_to_gpu)
-
+        
+    def reset_encoder_decoder(self):
+        # Restore the original forward methods
+        if hasattr(self.first_stage_model.encoder, 'original_forward'):
+            self.first_stage_model.encoder.forward = self.first_stage_model.encoder.original_forward
+        if hasattr(self.first_stage_model.decoder, 'original_forward'):
+            self.first_stage_model.decoder.forward = self.first_stage_model.decoder.original_forward
     def instantiate_first_stage(self, config):
         model = instantiate_from_config(config)
         self.first_stage_model = model.eval()
