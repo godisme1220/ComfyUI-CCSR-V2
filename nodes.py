@@ -52,6 +52,7 @@ class CCSR_Upscale:
             "keep_model_loaded": ("BOOLEAN", {"default": False}),
             
             },
+             "seed": ("INT", {"default": 123,"min": 0, "max": 0xffffffffffffffff, "step": 1}),
             
             }
     
@@ -62,7 +63,9 @@ class CCSR_Upscale:
     CATEGORY = "CCSR"
 
     @torch.no_grad()
-    def process(self, ccsr_model, image, resize_method, scale_by, steps, t_max, t_min, tile_size, tile_stride, color_fix_type, keep_model_loaded, vae_tile_size_encode, vae_tile_size_decode, sampling_method):
+    def process(self, ccsr_model, image, resize_method, scale_by, steps, t_max, t_min, tile_size, tile_stride, color_fix_type, keep_model_loaded, vae_tile_size_encode, vae_tile_size_decode, sampling_method, seed):
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
         comfy.model_management.unload_all_models()
         device = comfy.model_management.get_torch_device()
         config_path = os.path.join(script_directory, "configs/model/ccsr_stage2.yaml")
