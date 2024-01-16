@@ -106,6 +106,8 @@ class CCSR_Upscale:
         autocast_condition = dtype == torch.float16 and not comfy.model_management.is_device_mps(device)
         out = []    
 
+        pbar = comfy.utils.ProgressBar(batch_size)
+
         with torch.autocast(comfy.model_management.get_autocast_device(device), dtype=dtype) if autocast_condition else nullcontext():
             for i in range(batch_size):
                 img = resized_image[i].unsqueeze(0).to(device)
@@ -137,6 +139,8 @@ class CCSR_Upscale:
                         color_fix_type=color_fix_type
                     )
                 out.append(samples.squeeze(0).cpu())
+                pbar.update(1)
+                print("Sampled image ", i, " out of ", batch_size)
        
         original_height, original_width = H, W  
         processed_height = samples.size(2)
