@@ -1,5 +1,5 @@
 {
-  "last_node_id": 137,
+  "last_node_id": 138,
   "last_link_id": 327,
   "nodes": [
     {
@@ -45,7 +45,7 @@
         "1": 58
       },
       "flags": {},
-      "order": 22,
+      "order": 23,
       "mode": 0,
       "inputs": [
         {
@@ -119,7 +119,7 @@
         "1": 106
       },
       "flags": {},
-      "order": 13,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
@@ -197,7 +197,7 @@
       "flags": {
         "collapsed": true
       },
-      "order": 29,
+      "order": 30,
       "mode": 0,
       "inputs": [
         {
@@ -237,7 +237,7 @@
       "flags": {
         "collapsed": true
       },
-      "order": 14,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -275,7 +275,7 @@
         "1": 46
       },
       "flags": {},
-      "order": 26,
+      "order": 27,
       "mode": 0,
       "inputs": [
         {
@@ -354,7 +354,7 @@
       "flags": {
         "collapsed": true
       },
-      "order": 23,
+      "order": 24,
       "mode": 0,
       "inputs": [
         {
@@ -395,7 +395,7 @@
         "1": 230
       },
       "flags": {},
-      "order": 24,
+      "order": 25,
       "mode": 0,
       "inputs": [
         {
@@ -502,32 +502,6 @@
       ]
     },
     {
-      "id": 69,
-      "type": "PreviewImage",
-      "pos": [
-        -474,
-        381
-      ],
-      "size": {
-        "0": 838.04541015625,
-        "1": 577.9149780273438
-      },
-      "flags": {},
-      "order": 27,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 270,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage"
-      }
-    },
-    {
       "id": 1,
       "type": "LoadImage",
       "pos": [
@@ -579,7 +553,7 @@
         "1": 246
       },
       "flags": {},
-      "order": 25,
+      "order": 26,
       "mode": 0,
       "inputs": [
         {
@@ -669,7 +643,7 @@
         26
       ],
       "flags": {},
-      "order": 30,
+      "order": 31,
       "mode": 0,
       "inputs": [
         {
@@ -713,7 +687,7 @@
         "1": 1017.6703491210938
       },
       "flags": {},
-      "order": 34,
+      "order": 35,
       "mode": 0,
       "inputs": [
         {
@@ -735,8 +709,8 @@
       },
       "widgets_values": [
         [
-          "/view?filename=rgthree.compare._temp_gexhk_00001_.png&type=temp&subfolder=&rand=0.23767214987944085",
-          "/view?filename=rgthree.compare._temp_gexhk_00002_.png&type=temp&subfolder=&rand=0.5144547054040285"
+          "/view?filename=rgthree.compare._temp_panxg_00001_.png&type=temp&subfolder=&rand=0.8524980592592521",
+          "/view?filename=rgthree.compare._temp_panxg_00002_.png&type=temp&subfolder=&rand=0.7156166157180925"
         ]
       ]
     },
@@ -752,7 +726,7 @@
         "1": 146
       },
       "flags": {},
-      "order": 28,
+      "order": 29,
       "mode": 0,
       "inputs": [
         {
@@ -806,7 +780,7 @@
       "flags": {
         "collapsed": true
       },
-      "order": 20,
+      "order": 21,
       "mode": 0,
       "inputs": [
         {
@@ -896,7 +870,7 @@
         "1": 76
       },
       "flags": {},
-      "order": 16,
+      "order": 17,
       "mode": 0,
       "inputs": [
         {
@@ -938,7 +912,7 @@
       "flags": {
         "collapsed": true
       },
-      "order": 17,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
@@ -976,7 +950,7 @@
         "1": 154
       },
       "flags": {},
-      "order": 15,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
@@ -1020,7 +994,7 @@
         "1": 46
       },
       "flags": {},
-      "order": 32,
+      "order": 33,
       "mode": 0,
       "inputs": [
         {
@@ -1163,7 +1137,7 @@
         "1": 26
       },
       "flags": {},
-      "order": 19,
+      "order": 20,
       "mode": 0,
       "inputs": [
         {
@@ -1199,7 +1173,7 @@
         "1": 78
       },
       "flags": {},
-      "order": 33,
+      "order": 34,
       "mode": 0,
       "inputs": [
         {
@@ -1279,7 +1253,7 @@
         "1": 270
       },
       "flags": {},
-      "order": 35,
+      "order": 36,
       "mode": 0,
       "inputs": [
         {
@@ -1307,7 +1281,7 @@
       "flags": {
         "collapsed": true
       },
-      "order": 21,
+      "order": 22,
       "mode": 0,
       "inputs": [
         {
@@ -1382,7 +1356,7 @@
         "1": 334
       },
       "flags": {},
-      "order": 31,
+      "order": 32,
       "mode": 0,
       "inputs": [
         {
@@ -1469,6 +1443,32 @@
       ]
     },
     {
+      "id": 69,
+      "type": "PreviewImage",
+      "pos": [
+        -337,
+        433
+      ],
+      "size": {
+        "0": 838.04541015625,
+        "1": 577.9149780273438
+      },
+      "flags": {},
+      "order": 28,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 270,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
       "id": 137,
       "type": "CCSR_Upscale",
       "pos": [
@@ -1477,10 +1477,10 @@
       ],
       "size": {
         "0": 317.4000244140625,
-        "1": 342
+        "1": 390
       },
       "flags": {},
-      "order": 18,
+      "order": 19,
       "mode": 0,
       "inputs": [
         {
@@ -1522,8 +1522,33 @@
         1024,
         1024,
         "adain",
-        false
+        false,
+        123,
+        "fixed"
       ]
+    },
+    {
+      "id": 138,
+      "type": "Note",
+      "pos": [
+        -271,
+        142
+      ],
+      "size": [
+        454.04517459081205,
+        148.7386962638413
+      ],
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "sampling methods:\nccsr = normal, untiled, heavy on VRAM\n\nccsr_tiled_mixdiff = tiled, each tile decoded separately, has seams\n\nccsr_tiled_vae_gaussian_weights = seams fixed, can be less accurate and introduce extra noise"
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
     }
   ],
   "links": [
