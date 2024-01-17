@@ -61,7 +61,7 @@ import torch.nn.functional as F
 import comfy.model_management
 
 cpu = torch.device("cpu")
-device = device_interrogate = device_gfpgan = device_esrgan = device_codeformer = torch.device("cuda")
+device = device_interrogate = device_gfpgan = device_esrgan = device_codeformer = comfy.model_management.get_torch_device()
 dtype = torch.float16
 dtype_vae = torch.float16
 dtype_unet = torch.float16
