@@ -144,6 +144,7 @@ class CCSR_Upscale:
                         color_fix_type=color_fix_type
                     )
                 out.append(samples.squeeze(0).cpu())
+                comfy.model_management.throw_exception_if_processing_interrupted()
                 pbar.update(1)
                 print("Sampled image ", i, " out of ", batch_size)
        
