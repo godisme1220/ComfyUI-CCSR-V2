@@ -1,6 +1,5 @@
 taming-transformers
 omegaconf
 einops
-pytorch-lightning==2.1.2
-lightning-fabric==2.1.2
+pytorch-lightning>=2.2.1
 open-clip-torch>=2.23.0
