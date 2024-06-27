@@ -577,7 +577,8 @@ class SpacedSampler:
         # fuse by tile_weights on noise (score)
         noise_buffer /= count
         pred_x0 = self._predict_xstart_from_eps(x_t=img, t=index, eps=noise_buffer)
-        tao_index = torch.tensor(torch.round(index * t_max), dtype=torch.int64)
+        tao_index = torch.round(index * t_max).clone().detach().to(torch.int64)
+
         
         img = self.q_sample(pred_x0, tao_index)
 
@@ -606,11 +607,11 @@ class SpacedSampler:
                 tile_cond_img = cond_img[:, :, hi * 8:hi_end * 8, wi * 8: wi_end * 8]
                 tile_cond = {
                     "c_latent": [self.model.apply_condition_encoder(tile_cond_img)],
-                    "c_crossattn": [self.model.get_learned_conditioning([positive_prompt] * b)]
+                    "c_crossattn": [empty_text_embed * b]
                 }
                 tile_uncond = {
                     "c_latent": [self.model.apply_condition_encoder(tile_cond_img)],
-                    "c_crossattn": [self.model.get_learned_conditioning([negative_prompt] * b)]
+                    "c_crossattn": [empty_text_embed * b]
                 }
                 # predict noise for this tile
                 tile_noise = self.predict_noise(tile_img, ts, tile_cond, cfg_scale, tile_uncond)
@@ -728,11 +729,12 @@ class SpacedSampler:
             # accumulate noise
             noise_buffer[:, :, hi:hi_end, wi:wi_end] += tile_noise
             count[:, :, hi:hi_end, wi:wi_end] += 1
-        pbar.update(1)
+        
         # average on noise (score)
         noise_buffer.div_(count)
         pred_x0 = self._predict_xstart_from_eps(x_t=img, t=index, eps=noise_buffer)
-        tao_index = torch.tensor(torch.round(index * t_max), dtype=torch.int64)
+        tao_index = torch.round(index * t_max).clone().detach().to(torch.int64)
+
         img = self.q_sample(pred_x0, tao_index)
 
         noise_buffer.zero_()
@@ -795,6 +797,7 @@ class SpacedSampler:
 
             noise_buffer.zero_()
             count.zero_()
+            pbar.update(1)
 
         img = pred_x0
         # decode samples of each diffusion process
