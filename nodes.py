@@ -10,6 +10,7 @@ from .model.ccsr_stage1 import ControlLDM
 from .utils.common import instantiate_from_config, load_state_dict
 
 import comfy.model_management
+import comfy.utils
 import folder_paths
 from nodes import ImageScaleBy
 from nodes import ImageScale
@@ -75,7 +76,7 @@ class CCSR_Upscale:
             config = OmegaConf.load(config_path)
             self.model = instantiate_from_config(config)
             
-            load_state_dict(self.model, torch.load(ccsr_model, map_location="cpu"), strict=True)
+            load_state_dict(self.model, comfy.utils.load_torch_file(ccsr_model), strict=True)
             # reload preprocess model if specified
 
             self.model.freeze()
