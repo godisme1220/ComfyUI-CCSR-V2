@@ -7,6 +7,9 @@ https://huggingface.co/Kijai/ccsr-safetensors/tree/main
 
 There's also a new node that autodownloads them, in which case they go to `ComfyUI/models/CCSR`
 
+![image](https://github.com/kijai/ComfyUI-CCSR/assets/40791699/f7301285-1753-49f7-9828-c8273ee06bb9)
+
+
 The old node simply selects from checkpoints -folder, for backwards compatibility I won't change that.
 
 https://github.com/kijai/ComfyUI-CCSR/assets/40791699/a22306f0-90a4-4a3e-97de-1f795fa8decd
