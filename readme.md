@@ -1,4 +1,13 @@
 # ComfyUI- CCSR upscaler node
+## Update:
+
+Models now available here in safetensors format here, by default fp16 is used:
+
+https://huggingface.co/Kijai/ccsr-safetensors/tree/main
+
+There's also a new node that autodownloads them, in which case they go to `ComfyUI/models/CCSR`
+
+The old node simply selects from checkpoints -folder, for backwards compatibility I won't change that.
 
 https://github.com/kijai/ComfyUI-CCSR/assets/40791699/a22306f0-90a4-4a3e-97de-1f795fa8decd
 
@@ -6,8 +15,11 @@ https://github.com/kijai/ComfyUI-CCSR/assets/40791699/a22306f0-90a4-4a3e-97de-1f
 
 This is a simple wrapper node for https://github.com/csslc/CCSR
 
-NOT a proper ComfyUI implementation, so not very efficient and there might be memory issues, tested on 4090 and 4x upscale tiled worked well.
+As such, it's NOT a proper native ComfyUI implementation, so not very efficient and there might be memory issues, tested on 4090 and 4x upscale tiled worked well.
 
+
+
+Original model:
 The model (https://drive.google.com/drive/folders/1jM1mxDryPk9CTuFTvYcraP2XIVzbPiw_?usp=drive_link) goes to ComfyUI/models/checkpoints
 
 I suggest installing with the comfyui-manager:
