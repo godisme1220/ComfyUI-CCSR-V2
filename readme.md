@@ -9,6 +9,8 @@ There's also a new node that autodownloads them, in which case they go to `Comfy
 
 ![image](https://github.com/kijai/ComfyUI-CCSR/assets/40791699/f7301285-1753-49f7-9828-c8273ee06bb9)
 
+Model loading is also twice as fast as before, and memory use should be bit lower.
+
 
 The old node simply selects from checkpoints -folder, for backwards compatibility I won't change that.
 
@@ -23,7 +25,7 @@ As such, it's NOT a proper native ComfyUI implementation, so not very efficient 
 
 
 Original model:
-The model (https://drive.google.com/drive/folders/1jM1mxDryPk9CTuFTvYcraP2XIVzbPiw_?usp=drive_link) goes to ComfyUI/models/checkpoints
+The model (https://drive.google.com/drive/folders/1jM1mxDryPk9CTuFTvYcraP2XIVzbPiw_?usp=drive_link) goes to `ComfyUI/models/checkpoints`
 
 I suggest installing with the comfyui-manager:
 ![image](https://github.com/kijai/ComfyUI-CCSR/assets/40791699/b7214913-4789-4da2-b05a-4ff18e6619b2)
