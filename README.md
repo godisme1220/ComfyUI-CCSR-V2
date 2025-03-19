@@ -10,36 +10,36 @@ then download the corresponding files from CCSRV2 repo indicated. https://huggin
 
 the models/ccsr folder structure should be as below:
 
-├─Controlnet
-│      config.json
-│      diffusion_pytorch_model.safetensors
-│
-├─stable-diffusion-2-1-base
-│  │  model_index.json
-│  │
-│  ├─feature_extractor
-│  │      preprocessor_config.json
-│  │
-│  ├─scheduler
-│  │      scheduler_config.json
-│  │
-│  ├─text_encoder
-│  │      config.json
-│  │      model.safetensors
-│  │
-│  ├─tokenizer
-│  │      merges.txt
-│  │      special_tokens_map.json
-│  │      tokenizer_config.json
-│  │      vocab.json
-│  │
-│  └─unet
-│          config.json
-│          diffusion_pytorch_model.safetensors
-│
-└─vae
-        config.json
-        diffusion_pytorch_model.safetensors
+        ├─Controlnet
+        │      config.json
+        │      diffusion_pytorch_model.safetensors
+        │
+        ├─stable-diffusion-2-1-base
+        │  │  model_index.json
+        │  │
+        │  ├─feature_extractor
+        │  │      preprocessor_config.json
+        │  │
+        │  ├─scheduler
+        │  │      scheduler_config.json
+        │  │
+        │  ├─text_encoder
+        │  │      config.json
+        │  │      model.safetensors
+        │  │
+        │  ├─tokenizer
+        │  │      merges.txt
+        │  │      special_tokens_map.json
+        │  │      tokenizer_config.json
+        │  │      vocab.json
+        │  │
+        │  └─unet
+        │          config.json
+        │          diffusion_pytorch_model.safetensors
+        │
+        └─vae
+                config.json
+                diffusion_pytorch_model.safetensors
 
 
 After that, restart comfy, should see a CCSRV2 Upscale node.
