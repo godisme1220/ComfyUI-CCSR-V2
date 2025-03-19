@@ -1,0 +1,24 @@
+python test_ccsr_tile.py \
+--pretrained_model_path preset/models/stable-diffusion-2-1-base \
+--controlnet_model_path preset/models \
+--vae_model_path preset/models \
+--baseline_name ccsr-v2 \
+--image_path preset/test_datasets \
+--output_dir experiments/test \
+--sample_method ddpm \
+--num_inference_steps 6 \
+--t_max 0.6667 \
+--t_min 0.5 \
+--start_point lr \
+--start_steps 999 \
+--process_size 512 \
+--guidance_scale 4.5 \
+--sample_times 1 \
+--use_vae_encode_condition \
+--upscale 4 \
+--tile_diffusion \
+--tile_diffusion_size 512 \
+--tile_diffusion_stride 256 \
+--tile_vae \
+--vae_decoder_tile_size 224 \
+--vae_encoder_tile_size 1024 \

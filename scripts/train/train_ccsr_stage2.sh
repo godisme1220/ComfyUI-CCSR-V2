@@ -1,0 +1,22 @@
+CUDA_VISIBLE_DEVICES="0,1,2,3," accelerate launch train_ccsr_stage2.py \
+--pretrained_model_name_or_path="preset/models/stable-diffusion-2-1-base" \
+--controlnet_model_name_or_path='preset/models/model_stage1' \
+--enable_xformers_memory_efficient_attention \
+--output_dir="./experiments/ccsrv2_stage2" \
+--mixed_precision="fp16" \
+--resolution=512 \
+--learning_rate=5e-6 \
+--train_batch_size=2 \
+--gradient_accumulation_steps=8 \
+--checkpointing_steps=500 \
+--is_start_lr=True \
+--t_max=0.6667 \
+--num_inference_steps=1 \
+--is_module \
+--lambda_l2=1.0 \
+--lambda_lpips=1.0 \
+--lambda_disc=0.05 \
+--lambda_disc_train=0.5 \
+--begin_disc=100 \
+--max_train_steps=2000 \
+--dataset_root_folders 'preset/gt_path.txt'  
